@@ -1,1 +1,30 @@
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.17")
+library('BiocManager')
+install.packages('ggplot2')
+library('ggplot2')
+install.packages('ggrepel')
+library('ggrepel')
+install.packages('Cairo')
+library('Cairo')
+setwd("/Users/hughnicholson/Desktop/DataFiles")
+Book3 <- read.delim("~/Desktop/Book3.txt")
+attach(Book3)
+Book3$diffexpressed <- "NO"
+Book3$diffexpressed[Book3$logfc1 > 0.585 & Book3$p1 < 0.05] <- "UP"
+Book3$diffexpressed[Book3$logfc1 < -0.585 & Book3$p1 < 0.05] <- "DOWN"
+Book3$diffexpressed[Book3$p1 > 0.05] <- "NILL"
+Book3$delabel <- NA
+Book3$delabel[Book3$diffexpressed =="UP"] <- Book3$Protein[Book3$diffexpressed =="UP"]
+Book3$delabel[Book3$diffexpressed =="DOWN"] <- Book3$Protein[Book3$diffexpressed =="DOWN"]
+ggplot(data=Book3, aes(x=logfc1, segment.color='black', legend.position='none', y=-log10(p1), col=diffexpressed, label=delabel),xlim(-2,3)) +
++ geom_point() + 
++ theme_minimal() +
++ geom_text_repel(size=c(3)) +
++ scale_color_manual(values=c("blue", "grey", 'black',"red")) +
++ geom_vline(xintercept=c(-0.585, 0.585), col="black",lty=2) +
++ geom_hline(yintercept=-log10(0.05), col="black",lty=2) +
++ theme(panel.border = element_rect(color = "black", fill=NA, size=1))
+add.element(ylab=expression(paste("-log" ["10"]," p value" )),xlab=expression(paste("log" ["2"]," fold change" )))
 
